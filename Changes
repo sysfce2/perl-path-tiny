@@ -2,6 +2,16 @@ Revision history for Path-Tiny
 
 {{$NEXT}}
 
+0.146     2024-05-08 08:27:52-04:00 America/New_York
+
+    - No changes from 0.145-TRIAL
+
+0.145     2024-05-01 22:26:26-04:00 America/New_York (TRIAL RELEASE)
+
+    [Changes]
+
+    - Improved error message spewing to a file in a non-existent directory.
+
 0.144     2022-12-01 11:36:19-05:00 America/New_York
 
     - No changes from 0.143-TRIAL
@@ -320,7 +330,7 @@ Revision history for Path-Tiny
     - The 'absolute' method now always returns an absolute path, even if a
       user provided a relative path for the base path.  The old, odd
       behavior was documented, but people often don't read docs.  The new
-      behavior avoids suprises.
+      behavior avoids surprises.
 
     [Additions]
 
@@ -1064,7 +1074,7 @@ Revision history for Path-Tiny
 
     [CHANGED]
 
-    - slurp/spew/etc and openr/openw/etc now repect default layers
+    - slurp/spew/etc and openr/openw/etc now respect default layers
       set by -C or the open pragma
 
     - spew and append can now be given array references to output

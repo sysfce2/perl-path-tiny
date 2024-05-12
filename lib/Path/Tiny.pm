@@ -5,7 +5,7 @@ use warnings;
 package Path::Tiny;
 # ABSTRACT: File path utility
 
-our $VERSION = '0.145';
+our $VERSION = '0.147';
 
 # Dependencies
 use Config;
@@ -508,7 +508,7 @@ sub _resolve_symlinks {
     return $new;
 }
 
-sub _replacment_path {
+sub _replacement_path {
     my ($self) = @_;
 
     my $unique_suffix = $$ . int( rand( 2**31 ) );
@@ -1022,7 +1022,7 @@ sub edit_lines {
     # writing needs to follow the link and create the tempfile in the same
     # dir for later atomic rename
     my $resolved_path = $self->_resolve_symlinks;
-    my $temp          = $resolved_path->_replacment_path;
+    my $temp          = $resolved_path->_replacement_path;
 
     my $temp_fh = $temp->filehandle( { exclusive => 1, locked => 1 }, ">", $binmode );
     my $in_fh = $self->filehandle( { locked => 1 }, '<', $binmode );
@@ -2138,9 +2138,16 @@ sub spew {
     # writing needs to follow the link and create the tempfile in the same
     # dir for later atomic rename
     my $resolved_path = $self->_resolve_symlinks;
-    my $temp          = $resolved_path->_replacment_path;
+    my $temp          = $resolved_path->_replacement_path;
 
-    my $fh   = $temp->filehandle( { exclusive => 1, locked => 1 }, ">", $binmode );
+    my $fh;
+    my $ok = eval { $fh = $temp->filehandle( { exclusive => 1, locked => 1 }, ">", $binmode ); 1 };
+    if (!$ok) {
+        my $msg = ref($@) eq 'Path::Tiny::Error'
+            ? "error opening temp file '$@->{file}' for atomic write: $@->{err}"
+            : "error opening temp file for atomic write: $@";
+        $self->_throw('spew', $self->[PATH], $msg);
+    }
     print( {$fh} map { ref eq 'ARRAY' ? @$_ : $_ } @data) or self->_throw('print', $temp->[PATH]);
     close $fh or $self->_throw( 'close', $temp->[PATH] );
 
